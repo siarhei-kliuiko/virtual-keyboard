@@ -32,6 +32,7 @@
   border-radius: 5px;
   user-select: none;
   cursor: pointer;
+  transition: background-color .2s;
 }
 
 .button__value {
@@ -56,6 +57,10 @@
   position: unset;
   display: unset;
   font-size: 16px;
+}
+
+.button_state_pressed {
+  background-color: #4359be;
 }
 
 .button_key_backspace,

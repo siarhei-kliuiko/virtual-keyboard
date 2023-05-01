@@ -1,9 +1,14 @@
 const BUTTON_KEY_PREFIX = 'button_key_';
 const BUTTON_TYPE_PREFIX = 'button_type_';
 const BUTTON_TYPE_SPECIAL = 'special';
+const BUTTON_TYPE_LETTER = 'letter';
 const BUTTON_VALUE_ELEMENT = 'button__value';
 const BUTTON_VALUE_ACTIVE = 'active';
-const BUTTON_TYPE_LETTER = 'letter';
+const BUTTON_STATE_PREFIX = 'button_state_';
+const BUTTON_STATE_PRESSED = 'pressed';
+export const BUTTON_SPECIAL_LSHIFT = 'shiftleft';
+export const BUTTON_SPECIAL_RSHIFT = 'shiftright';
+export const BUTTON_SPECIAL_CAPS = 'capslock';
 
 export function createButton(keyCode, keyIsSpecial) {
   const button = document.createElement('button');
@@ -40,3 +45,14 @@ export const setButtonTypeLetter = (button) => {
 export const unSetButtonTypeLetter = (button) => {
   button.classList.remove(`${BUTTON_TYPE_PREFIX}${BUTTON_TYPE_LETTER}`);
 };
+
+export const setButtonPressedState = (button) => {
+  button.classList.add(`${BUTTON_STATE_PREFIX}${BUTTON_STATE_PRESSED}`);
+};
+
+export const unSetButtonPressedState = (button) => {
+  button.classList.remove(`${BUTTON_STATE_PREFIX}${BUTTON_STATE_PRESSED}`);
+};
+
+export const isButtonInPressedState = (button) => button.className
+  .includes(BUTTON_STATE_PREFIX + BUTTON_STATE_PRESSED);

@@ -43,4 +43,9 @@ export default class Keyboard {
       }
     }
   }
+
+  getButton(keyCode) {
+    return [...this.keyboardElement.children]
+      .find((button) => keyCode.toLowerCase() === getButtonKeyCode(button));
+  }
 }
