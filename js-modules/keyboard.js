@@ -8,6 +8,7 @@ import {
   isLetterButton,
   toggleButtonActiveValue,
   isSpecialButton,
+  BUTTON_SPECIAL_CAPS,
 } from './button.js';
 import {
   keyCodes,
@@ -35,9 +36,19 @@ export default class Keyboard {
           if (layoutKey) {
             if (layoutKey.upper) {
               setButtonValues(this.keyboardElement.children[i], layoutKey.default, layoutKey.upper);
+              if (this.isButtonPressed(BUTTON_SPECIAL_CAPS)
+                && !isLetterButton(this.keyboardElement.children[i])) {
+                toggleButtonActiveValue(this.keyboardElement.children[i]);
+              }
+
               setButtonTypeLetter(this.keyboardElement.children[i]);
             } else if (layoutKey.alt) {
               setButtonValues(this.keyboardElement.children[i], layoutKey.default, layoutKey.alt);
+              if (this.isButtonPressed(BUTTON_SPECIAL_CAPS)
+                && isLetterButton(this.keyboardElement.children[i])) {
+                toggleButtonActiveValue(this.keyboardElement.children[i]);
+              }
+
               unSetButtonTypeLetter(this.keyboardElement.children[i]);
             } else {
               setButtonValues(this.keyboardElement.children[i], layoutKey.default, '');

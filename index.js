@@ -53,15 +53,22 @@ const handleShiftPress = (isPressedWithMouse) => {
   if (!keyboard.isButtonPressed(BUTTON_SPECIAL_LSHIFT)
     && !keyboard.isButtonPressed(BUTTON_SPECIAL_RSHIFT)) {
     isShiftPressedWithMouse = isPressedWithMouse;
-    keyboard.switchToAlternativeKeys();
-    setButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_LSHIFT));
-    setButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_RSHIFT));
+    if (keyboard.isButtonPressed(BUTTON_SPECIAL_LALT, BUTTON_SPECIAL_RALT)) {
+      keyboard.setLayout(localStorage.keyboardLayout === 'en' ? 'ru' : 'en');
+    } else {
+      keyboard.switchToAlternativeKeys();
+      setButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_LSHIFT));
+      setButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_RSHIFT));
+    }
   }
 };
 
 const handleShiftRelease = (isReleasedWithMouse) => {
   if (isShiftPressedWithMouse === isReleasedWithMouse) {
-    keyboard.switchToAlternativeKeys();
+    if (!keyboard.isButtonPressed(BUTTON_SPECIAL_LALT, BUTTON_SPECIAL_RALT)) {
+      keyboard.switchToAlternativeKeys();
+    }
+
     unSetButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_LSHIFT));
     unSetButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_RSHIFT));
   }
