@@ -6,7 +6,18 @@ import {
   BUTTON_SPECIAL_LSHIFT,
   BUTTON_SPECIAL_RSHIFT,
   BUTTON_SPECIAL_CAPS,
+  BUTTON_SPECIAL_BACKSPACE,
+  BUTTON_SPECIAL_DEL,
+  BUTTON_SPECIAL_TAB,
+  BUTTON_SPECIAL_ENTER,
+  BUTTON_SPECIAL_LCTRL,
+  BUTTON_SPECIAL_RCTRL,
+  BUTTON_SPECIAL_LALT,
+  BUTTON_SPECIAL_RALT,
+  BUTTON_SPECIAL_META,
   isButtonInPressedState,
+  isSpecialButton,
+  getButtonActiveValue,
 } from './js-modules/button.js';
 
 const main = document.createElement('main');
@@ -54,24 +65,64 @@ const handleShiftRelease = (isReleasedWithMouse) => {
   }
 };
 
-const buttonPress = (button, isPressedWithMouse) => {
-  const buttonKeyCode = getButtonKeyCode(button);
-  switch (buttonKeyCode) {
-    case BUTTON_SPECIAL_CAPS:
-      if (isButtonInPressedState(button)) {
-        unSetButtonPressedState(button);
-      } else {
-        setButtonPressedState(button);
-      }
+const addInputToTextArea = (char) => textArea
+  .setRangeText(char, textArea.selectionStart, textArea.selectionEnd, 'end');
 
-      break;
+const removeCharFormTextArea = (fromCursorRight) => {
+  let newCursorPos = textArea.selectionStart + (fromCursorRight ? 0 : -1);
+  if (newCursorPos < 0) {
+    newCursorPos = 0;
+  }
+
+  textArea.value = textArea.value.slice(0, newCursorPos)
+    + textArea.value.slice(textArea.selectionStart + (fromCursorRight ? 1 : 0));
+  textArea.setSelectionRange(newCursorPos, newCursorPos);
+};
+
+const handleSpecialButtonPress = (button, keyCode, isPressedWithMouse) => {
+  switch (keyCode) {
     case BUTTON_SPECIAL_LSHIFT:
     case BUTTON_SPECIAL_RSHIFT:
       handleShiftPress(isPressedWithMouse);
       break;
-    default:
-      setButtonPressedState(button);
+    case BUTTON_SPECIAL_CAPS:
       break;
+    case BUTTON_SPECIAL_BACKSPACE:
+      removeCharFormTextArea(false);
+      break;
+    case BUTTON_SPECIAL_DEL:
+      removeCharFormTextArea(true);
+      break;
+    case BUTTON_SPECIAL_TAB:
+      addInputToTextArea('\t');
+      break;
+    case BUTTON_SPECIAL_ENTER:
+      addInputToTextArea('\n');
+      break;
+    case BUTTON_SPECIAL_LCTRL:
+    case BUTTON_SPECIAL_RCTRL:
+    case BUTTON_SPECIAL_LALT:
+    case BUTTON_SPECIAL_RALT:
+    case BUTTON_SPECIAL_META:
+      break;
+    default:
+      addInputToTextArea(getButtonActiveValue(button));
+      break;
+  }
+};
+
+const buttonPress = (button, isPressedWithMouse) => {
+  const buttonKeyCode = getButtonKeyCode(button);
+  if (isSpecialButton(button)) {
+    handleSpecialButtonPress(button, buttonKeyCode, isPressedWithMouse);
+  } else {
+    addInputToTextArea(getButtonActiveValue(button));
+  }
+
+  if (buttonKeyCode === BUTTON_SPECIAL_CAPS && isButtonInPressedState(button)) {
+    unSetButtonPressedState(button);
+  } else {
+    setButtonPressedState(button);
   }
 };
 
