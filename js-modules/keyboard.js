@@ -4,6 +4,7 @@ import {
   setButtonValues,
   setButtonTypeLetter,
   unSetButtonTypeLetter,
+  isButtonInPressedState,
 } from './button.js';
 import {
   keyCodes,
@@ -45,7 +46,17 @@ export default class Keyboard {
   }
 
   getButton(keyCode) {
-    return [...this.keyboardElement.children]
-      .find((button) => keyCode.toLowerCase() === getButtonKeyCode(button));
+    return this.getButtons().find((button) => keyCode.toLowerCase() === getButtonKeyCode(button));
+  }
+
+  isButtonPressed(...keyCodesToCHeck) {
+    return this.getButtons().some((button) => {
+      const buttonKeyCode = getButtonKeyCode(button);
+      return isButtonInPressedState(button) && keyCodesToCHeck.includes(buttonKeyCode);
+    });
+  }
+
+  getButtons() {
+    return [...this.keyboardElement.children];
   }
 }

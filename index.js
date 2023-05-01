@@ -37,17 +37,24 @@ editorApp.append(hotkeyInfo);
 main.append(editorApp);
 document.body.append(main);
 
-const handleShiftPress = () => {
-  setButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_LSHIFT));
-  setButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_RSHIFT));
+let isShiftPressedWithMouse;
+const handleShiftPress = (isPressedWithMouse) => {
+  if (!keyboard.isButtonPressed(BUTTON_SPECIAL_LSHIFT)
+    && !keyboard.isButtonPressed(BUTTON_SPECIAL_RSHIFT)) {
+    isShiftPressedWithMouse = isPressedWithMouse;
+    setButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_LSHIFT));
+    setButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_RSHIFT));
+  }
 };
 
-const handleShiftRelease = () => {
-  unSetButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_LSHIFT));
-  unSetButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_RSHIFT));
+const handleShiftRelease = (isReleasedWithMouse) => {
+  if (isShiftPressedWithMouse === isReleasedWithMouse) {
+    unSetButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_LSHIFT));
+    unSetButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_RSHIFT));
+  }
 };
 
-const buttonPress = (button) => {
+const buttonPress = (button, isPressedWithMouse) => {
   const buttonKeyCode = getButtonKeyCode(button);
   switch (buttonKeyCode) {
     case BUTTON_SPECIAL_CAPS:
@@ -56,10 +63,11 @@ const buttonPress = (button) => {
       } else {
         setButtonPressedState(button);
       }
+
       break;
     case BUTTON_SPECIAL_LSHIFT:
     case BUTTON_SPECIAL_RSHIFT:
-      handleShiftPress();
+      handleShiftPress(isPressedWithMouse);
       break;
     default:
       setButtonPressedState(button);
@@ -67,14 +75,14 @@ const buttonPress = (button) => {
   }
 };
 
-const buttonRelease = (button, keyCode) => {
+const buttonRelease = (button, keyCode, isReleasedWithMouse) => {
   if (isButtonInPressedState(button)) {
     switch (keyCode.toLowerCase()) {
       case BUTTON_SPECIAL_CAPS:
         break;
       case BUTTON_SPECIAL_LSHIFT:
       case BUTTON_SPECIAL_RSHIFT:
-        handleShiftRelease();
+        handleShiftRelease(isReleasedWithMouse);
         break;
       default:
         unSetButtonPressedState(button);
@@ -88,18 +96,18 @@ const processButtonMouseEvent = (event) => {
   if (targetButton) {
     switch (event.type) {
       case 'mousedown':
-        buttonPress(targetButton);
+        buttonPress(targetButton, true);
         targetButton.addEventListener('mouseleave', processButtonMouseEvent);
         document.addEventListener('mouseup', processButtonMouseEvent);
         break;
       case 'mouseleave':
         document.removeEventListener('mouseup', processButtonMouseEvent);
         targetButton.removeEventListener('mouseleave', processButtonMouseEvent);
-        buttonRelease(targetButton, getButtonKeyCode(targetButton));
+        buttonRelease(targetButton, getButtonKeyCode(targetButton), true);
         break;
       case 'mouseup':
         targetButton.removeEventListener('mouseleave', processButtonMouseEvent);
-        buttonRelease(targetButton, getButtonKeyCode(targetButton));
+        buttonRelease(targetButton, getButtonKeyCode(targetButton), true);
         break;
       default:
         break;
@@ -109,3 +117,31 @@ const processButtonMouseEvent = (event) => {
 
 keyboard.keyboardElement.addEventListener('mousedown', processButtonMouseEvent);
 document.addEventListener('mouseup', processButtonMouseEvent);
+
+let prevKeyDownEvent;
+const processKeyboardPressEvent = (event) => {
+  if (prevKeyDownEvent && prevKeyDownEvent.type === event.type
+    && prevKeyDownEvent.code === event.code) {
+    return;
+  }
+
+  event.preventDefault();
+  const targetButton = keyboard.getButton(event.code);
+  if (targetButton) {
+    switch (event.type) {
+      case 'keydown':
+        prevKeyDownEvent = event;
+        buttonPress(targetButton, false);
+        break;
+      case 'keyup':
+        prevKeyDownEvent = null;
+        buttonRelease(targetButton, event.code, false);
+        break;
+      default:
+        break;
+    }
+  }
+};
+
+document.addEventListener('keydown', processKeyboardPressEvent);
+document.addEventListener('keyup', processKeyboardPressEvent);
