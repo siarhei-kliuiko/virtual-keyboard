@@ -5,6 +5,9 @@ import {
   setButtonTypeLetter,
   unSetButtonTypeLetter,
   isButtonInPressedState,
+  isLetterButton,
+  toggleButtonActiveValue,
+  isSpecialButton,
 } from './button.js';
 import {
   keyCodes,
@@ -58,5 +61,21 @@ export default class Keyboard {
 
   getButtons() {
     return [...this.keyboardElement.children];
+  }
+
+  switchCase() {
+    const charButtons = this.getButtons().filter((button) => isLetterButton(button));
+    Keyboard.switchToButtonsAlt(charButtons);
+  }
+
+  static switchToButtonsAlt(buttons) {
+    for (let i = 0; i < buttons.length; i += 1) {
+      toggleButtonActiveValue(buttons[i]);
+    }
+  }
+
+  switchToAlternativeKeys() {
+    const charButtons = this.getButtons().filter((button) => !isSpecialButton(button));
+    Keyboard.switchToButtonsAlt(charButtons);
   }
 }

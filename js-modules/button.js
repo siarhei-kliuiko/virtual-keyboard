@@ -71,3 +71,13 @@ export const isSpecialButton = (button) => button.className
 
 export const getButtonActiveValue = (button) => button
   .querySelector(`.${BUTTON_VALUE_ELEMENT}_${BUTTON_VALUE_ACTIVE}`).textContent;
+
+export const isLetterButton = (button) => button.className
+  .includes(BUTTON_TYPE_PREFIX + BUTTON_TYPE_LETTER);
+
+export const toggleButtonActiveValue = (button) => {
+  const buttonValues = button.children;
+  for (let i = 0; i < buttonValues.length; i += 1) {
+    buttonValues[i].classList.toggle(`${BUTTON_VALUE_ELEMENT}_${BUTTON_VALUE_ACTIVE}`);
+  }
+};

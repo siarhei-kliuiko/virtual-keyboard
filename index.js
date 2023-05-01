@@ -53,6 +53,7 @@ const handleShiftPress = (isPressedWithMouse) => {
   if (!keyboard.isButtonPressed(BUTTON_SPECIAL_LSHIFT)
     && !keyboard.isButtonPressed(BUTTON_SPECIAL_RSHIFT)) {
     isShiftPressedWithMouse = isPressedWithMouse;
+    keyboard.switchToAlternativeKeys();
     setButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_LSHIFT));
     setButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_RSHIFT));
   }
@@ -60,6 +61,7 @@ const handleShiftPress = (isPressedWithMouse) => {
 
 const handleShiftRelease = (isReleasedWithMouse) => {
   if (isShiftPressedWithMouse === isReleasedWithMouse) {
+    keyboard.switchToAlternativeKeys();
     unSetButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_LSHIFT));
     unSetButtonPressedState(keyboard.getButton(BUTTON_SPECIAL_RSHIFT));
   }
@@ -86,6 +88,7 @@ const handleSpecialButtonPress = (button, keyCode, isPressedWithMouse) => {
       handleShiftPress(isPressedWithMouse);
       break;
     case BUTTON_SPECIAL_CAPS:
+      keyboard.switchCase();
       break;
     case BUTTON_SPECIAL_BACKSPACE:
       removeCharFormTextArea(false);
