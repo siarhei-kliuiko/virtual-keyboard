@@ -7,4 +7,10 @@ module.exports = {
     browser: true,
   },
 
+  rules: {
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+    ],
+  },
 };
