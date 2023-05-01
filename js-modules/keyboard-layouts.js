@@ -517,3 +517,17 @@ export const keyMaps = {
     },
   },
 };
+
+export const isKeySpecial = (keyCode) => keyCode.toLowerCase() in keyMaps.special;
+
+export const getLayoutKey = (layoutName, keyCode) => {
+  let layoutKey = keyMaps[layoutName][keyCode];
+  if (!layoutKey) {
+    layoutKey = keyMaps.common[keyCode];
+    if (!layoutKey) {
+      layoutKey = keyMaps.special[keyCode];
+    }
+  }
+
+  return layoutKey;
+};
